@@ -57,69 +57,69 @@ func TestInit(t *testing.T) {
 
 func TestTrace(t *testing.T) {
 	testCases := map[int][]string{
-		LevelNone:  []string{"Trace me", ""},
-		LevelError: []string{"Trace me", ""},
-		LevelInfo:  []string{"Trace me", ""},
-		LevelWarn:  []string{"Trace me", ""},
-		LevelDebug: []string{"Trace me", ""},
-		LevelTrace: []string{"Trace me", "Trace me"},
+		LevelNone:  []string{"Trace me %s", "", ""},
+		LevelError: []string{"Trace me %s", "", ""},
+		LevelInfo:  []string{"Trace me %s", "", ""},
+		LevelWarn:  []string{"Trace me %s", "", ""},
+		LevelDebug: []string{"Trace me %s", "", ""},
+		LevelTrace: []string{"Trace me %s", "Trace me abc", "abc"},
 	}
-	testLogMethod(t, func(s string) { Trace(s) }, testCases)
+	testLogMethod(t, func(f string, s string) { Trace(f, s) }, testCases)
 }
 
 func TestDebug(t *testing.T) {
 	testCases := map[int][]string{
-		LevelNone:  []string{"Debug me", ""},
-		LevelError: []string{"Debug me", ""},
-		LevelInfo:  []string{"Debug me", ""},
-		LevelWarn:  []string{"Debug me", ""},
-		LevelDebug: []string{"Debug me", "Debug me"},
-		LevelTrace: []string{"Debug me", "Debug me"},
+		LevelNone:  []string{"Debug me %s", "", ""},
+		LevelError: []string{"Debug me %s", "", ""},
+		LevelInfo:  []string{"Debug me %s", "", ""},
+		LevelWarn:  []string{"Debug me %s", "", ""},
+		LevelDebug: []string{"Debug me %s", "Debug me abc", "abc"},
+		LevelTrace: []string{"Debug me %s", "Debug me abc", "abc"},
 	}
-	testLogMethod(t, func(s string) { Debug(s) }, testCases)
+	testLogMethod(t, func(f string, s string) { Debug(f, s) }, testCases)
 }
 
 func TestWarn(t *testing.T) {
 	testCases := map[int][]string{
-		LevelNone:  []string{"Warn me", ""},
-		LevelError: []string{"Warn me", ""},
-		LevelInfo:  []string{"Warn me", ""},
-		LevelWarn:  []string{"Warn me", "Warn me"},
-		LevelDebug: []string{"Warn me", "Warn me"},
-		LevelTrace: []string{"Warn me", "Warn me"},
+		LevelNone:  []string{"Warn me %s", "", ""},
+		LevelError: []string{"Warn me %s", "", ""},
+		LevelInfo:  []string{"Warn me %s", "", ""},
+		LevelWarn:  []string{"Warn me %s", "Warn me abc", "abc"},
+		LevelTrace: []string{"Warn me %s", "Warn me abc", "abc"},
+		LevelDebug: []string{"Warn me %s", "Warn me abc", "abc"},
 	}
-	testLogMethod(t, func(s string) { Warn(s) }, testCases)
+	testLogMethod(t, func(f string, s string) { Warn(f, s) }, testCases)
 }
 
 func TestInfo(t *testing.T) {
 	testCases := map[int][]string{
-		LevelNone:  []string{"Info me", ""},
-		LevelError: []string{"Info me", ""},
-		LevelInfo:  []string{"Info me", "Info me"},
-		LevelWarn:  []string{"Info me", "Info me"},
-		LevelDebug: []string{"Info me", "Info me"},
-		LevelTrace: []string{"Info me", "Info me"},
+		LevelNone:  []string{"Info me %s", "", ""},
+		LevelError: []string{"Info me %s", "", ""},
+		LevelInfo:  []string{"Info me %s", "Info me abc", "abc"},
+		LevelWarn:  []string{"Info me %s", "Info me abc", "abc"},
+		LevelDebug: []string{"Info me %s", "Info me abc", "abc"},
+		LevelTrace: []string{"Info me %s", "Info me abc", "abc"},
 	}
-	testLogMethod(t, func(s string) { Info(s) }, testCases)
+	testLogMethod(t, func(f string, s string) { Info(f, s) }, testCases)
 }
 
 func TestError(t *testing.T) {
 	testCases := map[int][]string{
-		LevelNone:  []string{"Error me", ""},
-		LevelError: []string{"Error me", "Error me"},
-		LevelInfo:  []string{"Error me", "Error me"},
-		LevelWarn:  []string{"Error me", "Error me"},
-		LevelDebug: []string{"Error me", "Error me"},
-		LevelTrace: []string{"Error me", "Error me"},
+		LevelNone:  []string{"Error me %s", "", ""},
+		LevelError: []string{"Error me %s", "Error me abc", "abc"},
+		LevelInfo:  []string{"Error me %s", "Error me abc", "abc"},
+		LevelWarn:  []string{"Error me %s", "Error me abc", "abc"},
+		LevelDebug: []string{"Error me %s", "Error me abc", "abc"},
+		LevelTrace: []string{"Error me %s", "Error me abc", "abc"},
 	}
-	testLogMethod(t, func(s string) { Error(s) }, testCases)
+	testLogMethod(t, func(f string, s string) { Error(f, s) }, testCases)
 }
 
-func testLogMethod(t *testing.T, f func(string), cases map[int][]string) {
+func testLogMethod(t *testing.T, f func(string, string), cases map[int][]string) {
 	for lev, v := range cases {
 		clear()
 		Init(lev)
-		f(v[0])
+		f(v[0], v[2])
 		if !strings.Contains(testOutput, v[1]) {
 			t.Errorf("at level '%d', expected output '%s' but got '%s'", lev, v[1], testOutput)
 		}
