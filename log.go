@@ -1,6 +1,6 @@
-// Package log defines a generic log implemetation with differing granularity levels.
-//
-// The logger is built on top of the standard golang log package.
+/*
+Package log defines a generic log implemetation with differing granularity levels
+*/
 package log
 
 import (
@@ -8,17 +8,18 @@ import (
 	"fmt"
 	"log"
 	"strings"
+
+	"github.com/fatih/color"
 )
 
 // Level setting constants
-//   LevelTrace > LevelDebug > LevelWarn > LevelInfo > LevelError > LevelNone
 const (
-	LevelNone  = 0
-	LevelError = 1
-	LevelInfo  = 2
-	LevelWarn  = 3
-	LevelDebug = 4
-	LevelTrace = 5
+	LevelNone  = 0 << iota
+	LevelError = 1 << iota
+	LevelInfo
+	LevelWarn
+	LevelDebug
+	LevelTrace
 )
 
 //Logger is the default interface all logs must implement in this library
@@ -32,7 +33,13 @@ type Logger interface {
 }
 
 var (
-	level = LevelInfo
+	level     = LevelInfo
+	useColour = false
+
+	red     = color.New(color.FgRed).SprintFunc()
+	yellow  = color.New(color.FgYellow).SprintFunc()
+	magenta = color.New(color.FgMagenta).SprintFunc()
+	cyan    = color.New(color.FgCyan).SprintFunc()
 )
 
 // DefaultLogger defines a simple logging package
@@ -47,7 +54,14 @@ func Init(l int) error {
 		return errors.New("unable to init logger: invalid level")
 	}
 	level = l
+	useColour = false
 	return nil
+}
+
+// InitWithColour initialises the same as Init but with colourised output
+func InitWithColour(l int) {
+	Init(l)
+	useColour = true
 }
 
 // InitFromString initialises the logger with Init(). Takes a string rather than a numerical levvel
@@ -63,12 +77,19 @@ func InitFromString(l string) error {
 		Init(LevelDebug)
 	case "trace":
 		Init(LevelTrace)
-	case "none":
+	case "default":
 		Init(LevelNone)
 	default:
 		return fmt.Errorf("unable to init logger: unknown level '%s'", l)
 	}
+	useColour = false
 	return nil
+}
+
+// InitFromStringWithColour initalises the same as InitFromString but with colourised output.
+func InitFromStringWithColour(l string) {
+	InitFromString(l)
+	useColour = true
 }
 
 // Fatal provides fatal level logging. Being fatal it will log, and then it will
@@ -83,21 +104,37 @@ func Fatal(format string, v ...interface{}) {
 
 // Error provides error level logging
 func Error(format string, v ...interface{}) {
+	if useColour {
+		writeLog("["+red("ERROR")+"]", LevelError, format, v...)
+		return
+	}
 	writeLog("[ERROR]", LevelError, format, v...)
 }
 
 // Debug provides debug level logging
 func Debug(format string, v ...interface{}) {
+	if useColour {
+		writeLog("["+magenta("DEBUG")+"]", LevelDebug, format, v...)
+		return
+	}
 	writeLog("[DEBUG]", LevelDebug, format, v...)
 }
 
 // Warn provides warning level logging
 func Warn(format string, v ...interface{}) {
+	if useColour {
+		writeLog("["+yellow("WARN")+"]", LevelWarn, format, v...)
+		return
+	}
 	writeLog("[WARN]", LevelWarn, format, v...)
 }
 
 // Info provides info level logging
 func Info(format string, v ...interface{}) {
+	if useColour {
+		writeLog("["+cyan("INFO")+"]", LevelInfo, format, v...)
+		return
+	}
 	writeLog("[INFO]", LevelInfo, format, v...)
 }
 
