@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -23,12 +24,19 @@ const (
 
 //Logger is the default interface all logs must implement in this library
 type Logger interface {
-	Fatal(format string, v ...interface{})
-	Trace(format string, v ...interface{})
-	Debug(format string, v ...interface{})
-	Info(format string, v ...interface{})
-	Warn(format string, v ...interface{})
-	Error(format string, v ...interface{})
+	Fatal(v ...interface{})
+	Trace(v ...interface{})
+	Debug(v ...interface{})
+	Info(fv ...interface{})
+	Warn(v ...interface{})
+	Error(v ...interface{})
+
+	Fatalf(format string, v ...interface{})
+	Tracef(format string, v ...interface{})
+	Debugf(format string, v ...interface{})
+	Infof(fformat string, v ...interface{})
+	Warnf(format string, v ...interface{})
+	Errorf(format string, v ...interface{})
 }
 
 var (
@@ -71,39 +79,68 @@ func InitFromString(l string) error {
 	return nil
 }
 
-// Fatal provides fatal level logging. Being fatal it will log, and then it will
-// exit the current process.
-func Fatal(format string, v ...interface{}) {
-	if v != nil {
-		log.Fatalf("[FATAL] "+format, v...)
-	} else {
-		log.Fatalln("[FATAL] " + format)
-	}
+// Fatalf provides fatal level logging in the manner of fmt.Printf.
+// Being fatal it will log, and then it will exit the current process.
+func Fatalf(format string, v ...interface{}) {
+	writeLog("[ERROR]", LevelError, format, v...)
+	os.Exit(1)
 }
 
-// Error provides error level logging
-func Error(format string, v ...interface{}) {
+// Fatal provides fatal level logging in the manner of fmt.Print.
+// Being fatal it will log, and then it will exit the current process.
+func Fatal(v ...interface{}) {
+	writeLog("[ERROR]", LevelError, fmt.Sprint(v))
+	os.Exit(1)
+}
+
+// Errorf provides error level logging in the manner of fmt.Printf
+func Errorf(format string, v ...interface{}) {
 	writeLog("[ERROR]", LevelError, format, v...)
 }
 
-// Debug provides debug level logging
-func Debug(format string, v ...interface{}) {
+// Error provides error level logging in the manner of fmt.Print
+func Error(v ...interface{}) {
+	Errorf(fmt.Sprint(v))
+}
+
+// Debugf provides debug level logging in the manner of fmt.Printf
+func Debugf(format string, v ...interface{}) {
 	writeLog("[DEBUG]", LevelDebug, format, v...)
 }
 
-// Warn provides warning level logging
-func Warn(format string, v ...interface{}) {
+// Debug provides debug level logging in the manner of fmt.Print
+func Debug(v ...interface{}) {
+	Debugf(fmt.Sprint(v))
+}
+
+// Warnf provides warning level logging in the manner of fmt.Printf
+func Warnf(format string, v ...interface{}) {
 	writeLog("[WARN]", LevelWarn, format, v...)
 }
 
-// Info provides info level logging
-func Info(format string, v ...interface{}) {
+// Warn provides warning level logging in the manner of fmt.Print
+func Warn(v ...interface{}) {
+	Warnf(fmt.Sprint(v))
+}
+
+// Infof provides info level logging in the manner of fmt.Printf
+func Infof(format string, v ...interface{}) {
 	writeLog("[INFO]", LevelInfo, format, v...)
 }
 
-// Trace provides trace level logging
-func Trace(format string, v ...interface{}) {
+// Info provides info level logging the manner of fmt.Print
+func Info(v ...interface{}) {
+	Infof(fmt.Sprint(v))
+}
+
+// Tracef provides trace level logging in the manner of fmt.Printf
+func Tracef(format string, v ...interface{}) {
 	writeLog("[TRACE]", LevelTrace, format, v...)
+}
+
+// Trace provides trace level logging in the manner of fmt.Print
+func Trace(v ...interface{}) {
+	Tracef(fmt.Sprint(v))
 }
 
 func writeLog(prefix string, l int, format string, v ...interface{}) {

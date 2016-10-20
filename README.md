@@ -17,14 +17,22 @@ log.Trace("Trace this out")
 
 log.Info("This is more informational")
 
+log.Infof("This %s is nice", "thing")
+
 ```
 
 Functions
 ---------
 
-  - ``Fatal(format string, v ...interface{})``
-  - ``Trace(format string, v ...interface{})``
-  - ``Debug(format string, v ...interface{})``
-  - ``Info(format string, v ...interface{})``
-  - ``Warn(format string, v ...interface{})``
-  - ``Error(format string, v ...interface{})``
+  - ``Fatal(v ...interface{})``
+  - ``Fatalf(format string, v ...interface{})``
+  - ``Trace(v ...interface{})``
+  - ``Tracef(format string, v ...interface{})``
+  - ``Debug(v ...interface{})``
+  - ``Debugf(format string, v ...interface{})``
+  - ``Info(v ...interface{})``
+  - ``Infof(format string, v ...interface{})``
+  - ``Warn(v ...interface{})``
+  - ``Warnf(format string, v ...interface{})``
+  - ``Error(v ...interface{})``
+  - ``Errorf(format string, v ...interface{})``

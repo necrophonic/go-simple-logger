@@ -2,13 +2,14 @@ package log
 
 import (
 	"log"
+	"os"
 	"strings"
 	"testing"
 )
 
 func TestMain(m *testing.M) {
 	log.SetOutput(&OutWriter{})
-	m.Run()
+	os.Exit(m.Run())
 }
 
 var testOutput string
@@ -64,7 +65,8 @@ func TestTrace(t *testing.T) {
 		LevelDebug: []string{"Trace me %s", "", ""},
 		LevelTrace: []string{"Trace me %s", "Trace me abc", "abc"},
 	}
-	testLogMethod(t, func(f string, s string) { Trace(f, s) }, testCases)
+	testLogfMethod(t, func(f string, s string) { Tracef(f, s) }, testCases)
+	testLogMethod(t, func(s string) { Trace(s) }, testCases)
 }
 
 func TestDebug(t *testing.T) {
@@ -76,7 +78,8 @@ func TestDebug(t *testing.T) {
 		LevelDebug: []string{"Debug me %s", "Debug me abc", "abc"},
 		LevelTrace: []string{"Debug me %s", "Debug me abc", "abc"},
 	}
-	testLogMethod(t, func(f string, s string) { Debug(f, s) }, testCases)
+	testLogfMethod(t, func(f string, s string) { Debugf(f, s) }, testCases)
+	testLogMethod(t, func(s string) { Debug(s) }, testCases)
 }
 
 func TestWarn(t *testing.T) {
@@ -88,7 +91,8 @@ func TestWarn(t *testing.T) {
 		LevelTrace: []string{"Warn me %s", "Warn me abc", "abc"},
 		LevelDebug: []string{"Warn me %s", "Warn me abc", "abc"},
 	}
-	testLogMethod(t, func(f string, s string) { Warn(f, s) }, testCases)
+	testLogfMethod(t, func(f string, s string) { Warnf(f, s) }, testCases)
+	testLogMethod(t, func(s string) { Warn(s) }, testCases)
 }
 
 func TestInfo(t *testing.T) {
@@ -100,7 +104,8 @@ func TestInfo(t *testing.T) {
 		LevelDebug: []string{"Info me %s", "Info me abc", "abc"},
 		LevelTrace: []string{"Info me %s", "Info me abc", "abc"},
 	}
-	testLogMethod(t, func(f string, s string) { Info(f, s) }, testCases)
+	testLogfMethod(t, func(f string, s string) { Infof(f, s) }, testCases)
+	testLogMethod(t, func(s string) { Info(s) }, testCases)
 }
 
 func TestError(t *testing.T) {
@@ -112,14 +117,26 @@ func TestError(t *testing.T) {
 		LevelDebug: []string{"Error me %s", "Error me abc", "abc"},
 		LevelTrace: []string{"Error me %s", "Error me abc", "abc"},
 	}
-	testLogMethod(t, func(f string, s string) { Error(f, s) }, testCases)
+	testLogfMethod(t, func(f string, s string) { Errorf(f, s) }, testCases)
+	testLogMethod(t, func(s string) { Error(s) }, testCases)
 }
 
-func testLogMethod(t *testing.T, f func(string, string), cases map[int][]string) {
+func testLogfMethod(t *testing.T, f func(string, string), cases map[int][]string) {
 	for lev, v := range cases {
 		clear()
 		Init(lev)
 		f(v[0], v[2])
+		if !strings.Contains(testOutput, v[1]) {
+			t.Errorf("at level '%d', expected output '%s' but got '%s'", lev, v[1], testOutput)
+		}
+	}
+}
+
+func testLogMethod(t *testing.T, f func(s string), cases map[int][]string) {
+	for lev, v := range cases {
+		clear()
+		Init(lev)
+		f(v[1])
 		if !strings.Contains(testOutput, v[1]) {
 			t.Errorf("at level '%d', expected output '%s' but got '%s'", lev, v[1], testOutput)
 		}
