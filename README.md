@@ -1,6 +1,6 @@
 # go-simple-logger
 
-[![](https://godoc.org/github.com/necrophonic/log?status.svg)](http://godoc.org/github.com/necrophonic/log)
+[![](https://godoc.org/github.com/necrophonic/log?status.svg)](http://godoc.org/github.com/necrophonic/log) [![Go Report Card](https://goreportcard.com/badge/github.com/necrophonic/log)](https://goreportcard.com/report/github.com/necrophonic/log)
 
 ```
   import "github.com/necrophonic/log"
